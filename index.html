@@ -1,0 +1,1112 @@
+<!doctype html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#0B5D4A" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#121512" media="(prefers-color-scheme: dark)">
+<meta name="description" content="השוואת מחירי סופרמרקטים ב-70 ערים בישראל">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icon-192.png">
+<link rel="apple-touch-icon" href="icon-192.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="סל חכם">
+<meta name="mobile-web-app-capable" content="yes">
+<style>
+  html{color-scheme:light dark}
+  body{margin:0; font:14px/1.5 system-ui,sans-serif}
+  img{max-width:100%}
+  [hidden]{display:none!important}
+  /* מרווח לאזור הבטוח של אייפון כשהאפליקציה מותקנת */
+  .wrap{padding-bottom:calc(80px + env(safe-area-inset-bottom))!important}
+</style>
+</head>
+<body>
+<title>סל חכם</title>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Frank+Ruhl+Libre:wght@700;900&family=Assistant:wght@400;600;700&display=swap">
+<style>
+:root{
+  --ground:#F6F7F4; --surface:#FFFFFF;
+  --ink:#161D19; --ink-2:#3C4740; --muted:#6B7770;
+  --line:#DDE2D9; --line-2:#EDF0EA; --chip:#EFF2EC;
+  --accent:#0B5D4A; --accent-soft:#E2EFE9;
+  --cheap:#0F7355; --cheap-bg:#E4F2EA;
+  --dear:#A8331F;  --dear-bg:#FAEAE6; --dear-line:#E8C4BA;
+  --shadow:0 1px 2px rgba(22,29,25,.05), 0 10px 28px -20px rgba(22,29,25,.3);
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --ground:#121512; --surface:#1A1E1A;
+    --ink:#E9EEE6; --ink-2:#C2CCBE; --muted:#8E9A8C;
+    --line:#2C322B; --line-2:#242922; --chip:#232821;
+    --accent:#56C39C; --accent-soft:#17302A;
+    --cheap:#56C39C; --cheap-bg:#17302A;
+    --dear:#F0907A; --dear-bg:#341F1A; --dear-line:#53322A;
+    --shadow:0 1px 2px rgba(0,0,0,.4), 0 10px 28px -20px rgba(0,0,0,.9);
+  }
+}
+:root[data-theme="dark"]{
+  --ground:#121512; --surface:#1A1E1A;
+  --ink:#E9EEE6; --ink-2:#C2CCBE; --muted:#8E9A8C;
+  --line:#2C322B; --line-2:#242922; --chip:#232821;
+  --accent:#56C39C; --accent-soft:#17302A;
+  --cheap:#56C39C; --cheap-bg:#17302A;
+  --dear:#F0907A; --dear-bg:#341F1A; --dear-line:#53322A;
+  --shadow:0 1px 2px rgba(0,0,0,.4), 0 10px 28px -20px rgba(0,0,0,.9);
+}
+*{box-sizing:border-box}
+body{margin:0; background:var(--ground); color:var(--ink);
+  font-family:"Assistant","Segoe UI",system-ui,sans-serif;
+  font-size:15px; line-height:1.5; direction:rtl; -webkit-font-smoothing:antialiased}
+.wrap{max-width:720px; margin:0 auto; padding:18px 16px 60px}
+header{display:flex; align-items:flex-end; justify-content:space-between; gap:14px; margin-bottom:14px}
+h1{font-family:"Frank Ruhl Libre",Georgia,serif; font-weight:900; margin:0;
+   font-size:clamp(24px,5vw,32px); line-height:1.05}
+.sub{color:var(--muted); font-size:12.5px; margin-top:3px}
+.themer{border:1px solid var(--line); background:var(--surface); color:var(--muted);
+  border-radius:999px; padding:6px 13px; font:inherit; font-size:12.5px; cursor:pointer; white-space:nowrap}
+.themer:hover{border-color:var(--accent); color:var(--accent)}
+
+.modes{display:flex; gap:0; margin-bottom:16px; background:var(--chip);
+  border:1px solid var(--line); border-radius:11px; padding:3px}
+.modes button{flex:1; border:0; background:none; color:var(--muted); font:inherit;
+  font-size:14.5px; font-weight:600; padding:9px; border-radius:8px; cursor:pointer}
+.modes button[aria-pressed="true"]{background:var(--surface); color:var(--accent); box-shadow:var(--shadow)}
+
+.panel{background:var(--surface); border:1px solid var(--line); border-radius:12px;
+  box-shadow:var(--shadow); padding:15px 16px; margin-bottom:16px}
+.panel h2{font-family:"Frank Ruhl Libre",Georgia,serif; font-weight:700; font-size:17px; margin:0 0 4px}
+.panel .lead{font-size:13px; color:var(--muted); margin:0 0 11px}
+.searchbar{position:relative}
+input[type=search]{width:100%; border:1px solid var(--line); background:var(--ground); color:var(--ink);
+  border-radius:10px; padding:12px 42px 12px 12px; font:inherit; font-size:16px}
+input[type=search]::placeholder{color:var(--muted); font-size:14.5px}
+.searchbar::before{content:"⌕"; position:absolute; inset-inline-end:14px; top:50%;
+  transform:translateY(-54%); color:var(--muted); font-size:20px; pointer-events:none}
+.quick{display:flex; flex-direction:column; gap:0; margin-top:12px;
+  border:1px solid var(--line); border-radius:10px; overflow:hidden}
+.cat + .cat{border-top:1px solid var(--line-2)}
+.cat-hd{width:100%; display:flex; align-items:center; gap:10px; background:var(--surface); border:0; color:var(--ink);
+  font:inherit; font-size:14.5px; font-weight:600; padding:11px 14px; cursor:pointer; text-align:start}
+.cat-hd:hover{background:var(--chip)}
+.cat-hd .ct{flex:1; text-align:start}
+.cat-hd .chev{color:var(--accent); font-size:16px; font-weight:700; line-height:1; flex:none}
+.cat-body{display:flex; flex-wrap:wrap; gap:6px; padding:4px 14px 13px; background:var(--surface)}
+.cat-body button{border:1px solid var(--line); background:var(--chip); color:var(--ink-2);
+  border-radius:999px; padding:5px 12px; font:inherit; font-size:12.5px; cursor:pointer}
+.cat-body button:hover{border-color:var(--accent); color:var(--accent)}
+.cat-body button.on{background:var(--accent); border-color:var(--accent); color:#fff}
+.cat-body .sugg{width:100%; margin-top:10px; max-height:300px}
+.sugg{margin-top:10px; background:var(--line-2); border:1px solid var(--line-2);
+  border-radius:9px; overflow:hidden; display:flex; flex-direction:column; gap:1px; max-height:330px; overflow-y:auto}
+.sugg:empty{display:none}
+.sg{display:grid; grid-template-columns:40px 1fr auto 32px; gap:10px; align-items:center;
+  background:var(--surface); padding:9px 12px; font-size:14px}
+.sg .nm{white-space:nowrap; overflow:hidden; text-overflow:ellipsis}
+.sg .pr{font-variant-numeric:tabular-nums; font-size:12.5px; color:var(--muted); white-space:nowrap}
+.sg .pr b{color:var(--cheap)}
+.linkbtn{background:none;border:0;color:var(--accent);font:inherit;font-size:12.5px;
+  font-weight:700;cursor:pointer;padding:0;margin-inline-start:7px;text-decoration:underline}
+#cityList{max-height:320px}
+.cityrow{display:grid;grid-template-columns:1fr auto;gap:10px;align-items:center;
+  background:var(--surface);padding:11px 13px;font-size:14.5px;cursor:pointer;border:0;
+  width:100%;text-align:start;font-family:inherit;color:var(--ink)}
+.cityrow:hover{background:var(--chip)}
+.cityrow small{color:var(--muted);font-size:12px;white-space:nowrap}
+.fresh{background:var(--accent-soft); color:var(--accent); font-size:10.5px;
+  font-weight:700; padding:1px 6px; border-radius:999px; margin-inline-end:6px}
+.sg button{width:32px; height:32px; border-radius:8px; border:1px solid var(--line);
+  background:var(--ground); color:var(--accent); font-size:19px; line-height:1; cursor:pointer}
+.sg button:hover{background:var(--accent); border-color:var(--accent); color:#fff}
+.sg.have button{background:var(--accent); border-color:var(--accent); color:#fff}
+.th{display:inline-flex; align-items:center; justify-content:center;
+  width:var(--th); height:var(--th); flex:none; border-radius:7px;
+  background:var(--chip); overflow:hidden}
+.th img{width:100%; height:100%; object-fit:contain; display:block; padding:2px}
+.th-ic{color:var(--accent); padding:5px}
+.th-ic svg{width:100%; height:100%}
+.ln .th{align-self:start}
+.ic-sv{width:100%; height:100%; display:block}
+.ic-w{display:inline-flex; width:22px; height:22px; color:var(--accent); flex:none; opacity:.9}
+.card h3{display:flex; align-items:center; gap:9px}
+.card h3 .ic-w{width:24px; height:24px}
+.ln .ic{width:22px; height:22px; color:var(--accent); opacity:.85}
+.ln.over .ic{color:var(--dear); opacity:1}
+.ln.miss .ic{color:var(--muted); opacity:.7}
+.warn-dot{grid-column:3; font-size:12px; color:var(--dear); margin-inline-start:5px}
+.cat-hd .ic-w{margin-inline-end:8px}
+.hint{font-size:12.5px; color:var(--muted); margin:10px 0 0}
+.loading{font-size:13px; color:var(--accent); margin:11px 0 0; font-weight:600}
+input[type=search]:disabled{opacity:.6}
+
+/* collected list */
+.collected{margin-top:14px; border-top:1px solid var(--line-2); padding-top:12px}
+.collected .cap{font-size:12px; letter-spacing:.05em; text-transform:uppercase;
+  color:var(--muted); font-weight:700; margin-bottom:9px}
+.pill{display:flex; align-items:center; gap:9px;
+  background:var(--chip); border-radius:9px; padding:8px 11px; margin-bottom:5px; font-size:14px}
+.pill.gone{opacity:.5}
+.pill.gone .pn{font-style:italic}
+.pill .pn{white-space:nowrap; overflow:hidden; text-overflow:ellipsis; flex:1}
+.pill button{border:0; background:none; color:var(--muted); font-size:15px;
+  cursor:pointer; padding:0 2px; line-height:1; flex:none}
+.pill button:hover{color:var(--dear)}
+.acts{display:flex; gap:9px; margin-top:13px}
+.btn{border:1px solid var(--line); background:var(--surface); color:var(--ink-2);
+  border-radius:9px; padding:12px 16px; font:inherit; font-size:14.5px; font-weight:700; cursor:pointer}
+.btn:hover{border-color:var(--accent); color:var(--accent)}
+.btn.primary{flex:1; background:var(--accent); border-color:var(--accent); color:#fff}
+.btn.primary:hover{opacity:.9; color:#fff}
+.btn:disabled{opacity:.45; cursor:not-allowed}
+
+/* result */
+.verdict{background:var(--surface); border:1px solid var(--line); border-radius:14px;
+  box-shadow:var(--shadow); overflow:hidden; margin-bottom:16px}
+.verdict .top{padding:16px 18px 14px; border-bottom:1px solid var(--line-2)}
+.cap{font-size:11px; letter-spacing:.08em; text-transform:uppercase; color:var(--muted); font-weight:700}
+.winner{display:flex; align-items:baseline; justify-content:space-between; gap:12px; flex-wrap:wrap; margin-top:7px}
+.winner .nm{font-family:"Frank Ruhl Libre",Georgia,serif; font-weight:900;
+  font-size:clamp(22px,5vw,30px); color:var(--cheap); line-height:1.1}
+.winner .amt{font-size:clamp(21px,4.6vw,28px); font-weight:700; color:var(--cheap);
+  font-variant-numeric:tabular-nums; white-space:nowrap}
+.winner .where{width:100%; font-size:12.5px; color:var(--muted); margin-top:1px}
+.saveline{margin-top:9px; font-size:13.5px; color:var(--ink-2); line-height:1.55}
+.saveline b{color:var(--cheap); font-variant-numeric:tabular-nums}
+
+.lines{padding:2px 0}
+.ln{display:grid; grid-template-columns:34px 1fr auto; gap:11px; align-items:center; padding:10px 18px}
+.ln + .ln{border-top:1px solid var(--line-2)}
+.ln .ic{font-size:14px; line-height:1.4; color:var(--cheap)}
+.ln .nm{font-size:14.5px; line-height:1.35}
+.ln .amt{font-weight:700; font-variant-numeric:tabular-nums; white-space:nowrap; font-size:15px}
+.ln.over{background:var(--dear-bg)}
+.ln.over .ic{color:var(--dear)}
+.ln.over .amt{color:var(--dear)}
+.ln .alt{grid-column:2/-1; font-size:12.5px; color:var(--dear); margin-top:3px; line-height:1.45}
+.ln .alt b{font-variant-numeric:tabular-nums}
+.ln.miss{opacity:.72}
+.ln.miss .ic{color:var(--muted)}
+.ln.miss .amt{color:var(--muted); font-weight:400; font-size:13px}
+
+.totbar{display:flex; justify-content:space-between; gap:12px; padding:13px 18px;
+  border-top:1px solid var(--line); font-size:14px; background:var(--chip)}
+.totbar b{font-variant-numeric:tabular-nums}
+.overnote{padding:12px 18px; background:var(--dear-bg); border-top:1px solid var(--dear-line);
+  font-size:13px; color:var(--ink-2); line-height:1.55}
+.overnote b{color:var(--dear); font-variant-numeric:tabular-nums}
+.rk{display:grid; grid-template-columns:24px 1fr auto; gap:10px; align-items:start;
+  padding:10px 18px; font-size:13.5px}
+.rk + .rk{border-top:1px solid var(--line-2)}
+.rk .pos{color:var(--muted); font-size:12px; font-variant-numeric:tabular-nums}
+.rk .nm{color:var(--ink-2); line-height:1.45; min-width:0}
+.rk .amt{font-weight:700; font-variant-numeric:tabular-nums; white-space:nowrap}
+.rk .diff{font-size:12px; color:var(--muted)}
+.rk.first{background:var(--cheap-bg)} .rk.first .nm{font-weight:700; color:var(--ink)}
+.rk.first .amt{color:var(--cheap)}
+.rk .gap{font-size:11.5px; color:var(--muted); margin-inline-start:6px}
+.showall{width:100%; border:0; border-top:1px solid var(--line-2); background:none;
+  color:var(--accent); font:inherit; font-size:13px; font-weight:600; padding:10px; cursor:pointer}
+.showall:hover{background:var(--chip)}
+.secttl{font-family:"Frank Ruhl Libre",Georgia,serif; font-weight:700; font-size:16px;
+  margin:0; padding:14px 18px 2px}
+
+/* product search mode */
+.cards{display:flex; flex-direction:column; gap:14px}
+.card{background:var(--surface); border:1px solid var(--line); border-radius:12px;
+  box-shadow:var(--shadow); overflow:hidden}
+.card h3{font-family:"Frank Ruhl Libre",Georgia,serif; font-weight:700; font-size:16.5px;
+  margin:0; padding:13px 15px 4px; line-height:1.3; text-wrap:balance}
+.card .sl{padding:0 15px 11px; font-size:12.5px; color:var(--muted)}
+.card .sl b{color:var(--cheap); font-variant-numeric:tabular-nums}
+table{width:100%; border-collapse:collapse; font-variant-numeric:tabular-nums}
+tbody tr{border-top:1px solid var(--line-2)}
+tbody tr.best{background:var(--cheap-bg)}
+td{padding:8px 15px; vertical-align:middle}
+td.rank{width:26px; color:var(--muted); font-size:12px; padding-inline-end:0}
+td.store{font-size:14px; color:var(--ink-2)}
+td.store small{display:block; font-size:11.5px; color:var(--muted); font-weight:400}
+tr.best td.store{font-weight:700; color:var(--ink)}
+td.price{text-align:end; white-space:nowrap; font-weight:700; font-size:15px; width:86px}
+tr.best td.price{color:var(--cheap)}
+td.extra{text-align:end; white-space:nowrap; font-size:12px; color:var(--muted); width:70px; padding-inline-start:0}
+tr.best td.extra{color:var(--cheap); font-weight:700}
+.empty{text-align:center; color:var(--muted); padding:32px 20px; font-size:14px; line-height:1.75;
+  background:var(--surface); border:1px dashed var(--line); border-radius:12px}
+.foot{margin-top:26px; padding-top:13px; border-top:1px solid var(--line-2);
+  font-size:11.5px; color:var(--muted); line-height:1.65}
+.toast{position:fixed; inset-inline:0; bottom:18px; margin:auto; width:max-content; max-width:88vw;
+  background:var(--ink); color:var(--ground); padding:9px 17px; border-radius:999px;
+  font-size:13px; font-weight:600; opacity:0; transition:opacity .22s; pointer-events:none; z-index:9}
+.toast.on{opacity:1}
+button:focus-visible,input:focus-visible{outline:2px solid var(--accent); outline-offset:2px}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+@media (max-width:460px){
+  td,.ln,.rk{padding-left:12px; padding-right:12px}
+  td.extra{display:none} .verdict .top{padding:14px 13px 12px}
+  .totbar,.overnote{padding-left:13px; padding-right:13px}
+}
+</style>
+
+<div class="wrap">
+  <header>
+    <div>
+      <h1>סל חכם</h1>
+      <div class="sub"><b id="cityNow">—</b> · <b id="nCh">0</b> רשתות · עודכן <b id="gen">—</b><button class="linkbtn" id="changeCity" type="button" hidden>החלף עיר</button><button class="linkbtn" id="signOut" type="button" hidden>יציאה</button></div>
+    </div>
+    <button class="themer" id="themer" type="button">מצב תצוגה</button>
+  </header>
+
+  <section class="panel" id="gate">
+    <h2>כניסה</h2>
+    <p class="lead">הזינו את קוד הגישה שקיבלתם. הקוד נשמר במכשיר, ולא תצטרכו להקליד אותו שוב.</p>
+    <div class="searchbar">
+      <input id="codeInput" type="text" inputmode="latin" autocapitalize="characters"
+             placeholder="XXXX-XXXX-XXXX" autocomplete="off" maxlength="14"
+             style="letter-spacing:.12em;text-align:center;font-weight:700">
+    </div>
+    <button class="btn primary" id="codeGo" type="button" style="width:100%;margin-top:10px">
+      כניסה
+    </button>
+    <p class="hint" id="codeHint"></p>
+  </section>
+
+  <section class="panel" id="cityPanel" hidden>
+    <h2>באיזו עיר אתם קונים?</h2>
+    <p class="lead">המחירים משתנים מעיר לעיר, ולכן צריך לבחור פעם אחת. אפשר להחליף בכל רגע.</p>
+    <button class="btn primary" id="useLoc" type="button" style="width:100%;margin-bottom:10px">
+      אתרו את העיר שלי לפי המיקום
+    </button>
+    <div class="searchbar">
+      <input id="citySearch" type="search" placeholder="או הקלידו שם עיר…" autocomplete="off">
+    </div>
+    <div class="sugg" id="cityList"></div>
+    <p class="hint" id="cityHint">טוען את רשימת הערים…</p>
+  </section>
+
+  <div class="modes" role="group" id="modes" hidden>
+    <button type="button" id="mBasket" aria-pressed="true">בניית סל</button>
+    <button type="button" id="mFind" aria-pressed="false">חיפוש מוצר</button>
+  </div>
+
+  <!-- ===== basket mode ===== -->
+  <section id="paneBasket" hidden>
+    <div class="panel">
+      <h2>אילו מוצרים בסל?</h2>
+      <p class="lead">הקלידו סוג מוצר, או פתחו קטגוריה למטה ובחרו מתוכה.</p>
+      <div class="searchbar">
+        <input id="qb" type="search" placeholder="חלב, ביצים, קוטג׳, מרכך כביסה…" autocomplete="off" enterkeyhint="search" disabled>
+      </div>
+      <p class="loading" id="loading">טוענים את המחירים מ-12 הרשתות, רגע אחד…</p>
+      <div class="quick" id="quickB"></div>
+      <div class="sugg" id="sugg"></div>
+      <p class="hint" id="hintB">כל מוצר שתוסיפו ייספר למטה.</p>
+
+      <div class="collected" id="collected" hidden>
+        <div class="cap" id="cnt"></div>
+        <div id="pills"></div>
+        <div class="acts">
+          <button class="btn primary" id="calc" type="button">חשב סל במקום הכי זול</button>
+          <button class="btn" id="reset" type="button">איפוס</button>
+        </div>
+      </div>
+    </div>
+    <div id="result"></div>
+  </section>
+
+  <!-- ===== product search mode ===== -->
+  <section id="paneFind" hidden>
+    <div class="panel">
+      <h2>חיפוש מוצר בודד</h2>
+      <p class="lead">מחיר אחד, בכל הרשתות, מהזול ליקר.</p>
+      <div class="searchbar">
+        <input id="qf" type="search" placeholder="מה אתם מחפשים?" autocomplete="off" enterkeyhint="search" disabled>
+      </div>
+      <div class="quick" id="quickF"></div>
+    </div>
+    <div class="count" id="countF" style="font-size:13px;color:var(--muted);margin-bottom:12px"></div>
+    <div class="cards" id="cardsF"></div>
+  </section>
+
+  <p class="foot">
+    המחירים מקבצי שקיפות המחירים שרשתות המזון מחויבות לפרסם בחוק, ומתעדכנים כל שעה.
+    לכל רשת מוצג המחיר הזול מבין הסניפים שלה באזור שלכם. הסל נשמר במכשיר שלכם בלבד.
+  </p>
+</div>
+<div class="toast" id="toast"></div>
+
+<script>
+/* אייקון לכל סוג מוצר. צורות קו פשוטות ב-24x24, יורשות את צבע הטקסט,
+   ולכן הן עובדות בתצוגה בהירה וכהה בלי שתי גרסאות. נטענות עם הדף,
+   בלי בקשות רשת, מה שחשוב במיוחד בחיבור סלולרי איטי. */
+const ICONS={
+ milk:'M9 2h6M9 2v3L7 8v13a1 1 0 001 1h8a1 1 0 001-1V8l-2-3V2M7 11h10',
+ cheese:'M3 17V11l9-6 9 6v6a1 1 0 01-1 1H4a1 1 0 01-1-1z M7 14h.01M11 15h.01M15 13h.01',
+ yogurt:'M6 8h12l-1 12a1 1 0 01-1 1H8a1 1 0 01-1-1L6 8z M5 8h14V6a1 1 0 00-1-1H6a1 1 0 00-1 1v2z',
+ butter:'M3 9l4-4h13a1 1 0 011 1v9a1 1 0 01-1 1H4a1 1 0 01-1-1V9z M7 5v4H3',
+ cream:'M8 3h8v3l2 3v11a1 1 0 01-1 1H7a1 1 0 01-1-1V9l2-3V3z M8 6h8',
+ egg:'M12 21c-3.3 0-6-2.4-6-5.5C6 11 9 3 12 3s6 8 6 12.5c0 3.1-2.7 5.5-6 5.5z',
+ chicken:'M15 3a6 6 0 00-6 6c0 1.5-.6 2.4-1.6 3.4A4 4 0 1013 18c1-1 1.9-1.6 3.4-1.6a6 6 0 00-1.4-13.4z M8.5 15.5L4 20',
+ meat:'M17 4a5 5 0 00-7 0l-5 5a5 5 0 007 7l5-5a5 5 0 000-7z M9.5 11.5a2.5 2.5 0 103.5 3.5',
+ sausage:'M4 15c0-5 4-9 9-9a5 5 0 015 5c0 5-4 9-9 9a5 5 0 01-5-5z M8 16c2-1 4-3 5-5',
+ fish:'M2 12s4-6 10-6 10 6 10 6-4 6-10 6S2 12 2 12z M17 9l4-3v12l-4-3 M8 12h.01',
+ veg:'M9 20c-3-3-4-7-2-9s6-1 9 2 4 7 2 9-6 1-9-2z M16 8c1-2 2-3 4-3M16 8c-1-2-1-4 0-5',
+ fruit:'M12 7c-4-3-9 0-9 5s4 9 6 9 2-1 3-1 1 1 3 1 6-4 6-9-5-8-9-5z M12 7V3M12 3c2 0 3-1 3-2',
+ bread:'M4 10a4 4 0 014-4h8a4 4 0 014 4v8a1 1 0 01-1 1H5a1 1 0 01-1-1v-8z M8 6v13M12 6v13M16 6v13',
+ pasta:'M4 6c3 2 5 2 8 0s5-2 8 0 M4 11c3 2 5 2 8 0s5-2 8 0 M4 16c3 2 5 2 8 0s5-2 8 0',
+ rice:'M3 11h18c0 5-4 9-9 9s-9-4-9-9z M8 7h.01M12 5h.01M16 7h.01M10 8h.01M14 8h.01',
+ flour:'M7 8c0-2 2-4 5-4s5 2 5 4l1 11a1 1 0 01-1 1H7a1 1 0 01-1-1L7 8z M9 4c1 1 5 1 6 0 M9 12h6',
+ oil:'M10 2h4v3l3 4v11a1 1 0 01-1 1H8a1 1 0 01-1-1V9l3-4V2z M8 13h8',
+ sauce:'M7 7h10v13a1 1 0 01-1 1H8a1 1 0 01-1-1V7z M6 7V5a1 1 0 011-1h10a1 1 0 011 1v2 M10 12h4',
+ can:'M6 7c0-1.7 2.7-3 6-3s6 1.3 6 3v12c0 1.7-2.7 3-6 3s-6-1.3-6-3V7z M6 7c0 1.7 2.7 3 6 3s6-1.3 6-3',
+ soup:'M3 12h18a9 9 0 01-9 8 9 9 0 01-9-8z M8 8c0-1 1-1 1-2s-1-1-1-2 M12 8c0-1 1-1 1-2s-1-1-1-2 M16 8c0-1 1-1 1-2s-1-1-1-2',
+ frozen:'M12 2v20M3 7l18 10M21 7L3 17 M12 6l-3-2M12 6l3-2M12 18l-3 2M12 18l3 2',
+ cereal:'M3 11h18c0 5-4 9-9 9s-9-4-9-9z M15 3l4 5 M9 8c0-2 1-3 3-3s3 1 3 3',
+ spice:'M8 8h8v12a1 1 0 01-1 1H9a1 1 0 01-1-1V8z M9 8V5a1 1 0 011-1h4a1 1 0 011 1v3 M11 3h2 M11 13h2M11 16h2',
+ choc:'M4 5h16v14a1 1 0 01-1 1H5a1 1 0 01-1-1V5z M4 10h16M4 15h16M9 5v15M15 5v15',
+ cookie:'M12 3a9 9 0 109 9 4 4 0 01-4-4 5 5 0 01-5-5z M9 10h.01M14 14h.01M9 15h.01',
+ candy:'M9 9a3 3 0 116 6 3 3 0 01-6-6z M8 8L4 5v6l4-2 M16 16l4 3v-6l-4 2',
+ snack:'M7 4h10l2 16a1 1 0 01-1 1H6a1 1 0 01-1-1L7 4z M5 4h14 M10 10h.01M14 12h.01M11 15h.01',
+ icecream:'M8 10a4 4 0 118 0 M7 10h10l-5 11-5-11z M9 5a3 3 0 016 0',
+ nuts:'M12 3c4 0 7 4 7 9s-3 9-7 9-7-4-7-9 3-9 7-9z M12 3v18M8 9c2 1 6 1 8 0M8 15c2-1 6-1 8 0',
+ coffee:'M3 8h14v7a5 5 0 01-5 5H8a5 5 0 01-5-5V8z M17 10h2a2 2 0 010 4h-2 M7 4c0-1 1-1 1-2M11 4c0-1 1-1 1-2',
+ tea:'M4 8h12v8a4 4 0 01-4 4H8a4 4 0 01-4-4V8z M16 10h3a2 2 0 010 4h-3 M8 2c0 1 1 1 1 2M12 2c0 1 1 1 1 2',
+ water:'M10 2h4v2l2 3v13a1 1 0 01-1 1H9a1 1 0 01-1-1V7l2-3V2z M8 11h8M8 15h8',
+ juice:'M7 7h10v13a1 1 0 01-1 1H8a1 1 0 01-1-1V7z M7 7l1-4h8l1 4 M14 3l3-2',
+ soda:'M8 3h8v17a1 1 0 01-1 1H9a1 1 0 01-1-1V3z M8 7h8 M11 3V2h2v1',
+ beer:'M5 6h11v13a1 1 0 01-1 1H6a1 1 0 01-1-1V6z M16 9h3v6h-3 M5 6c0-2 2-3 5-3s6 1 6 3 M8 10v6M12 10v6',
+ wine:'M7 3h10v4a5 5 0 01-10 0V3z M12 12v8M8 20h8 M7 7h10',
+ laundry:'M3 4h18v16a1 1 0 01-1 1H4a1 1 0 01-1-1V4z M3 8h18 M12 11a4 4 0 110 8 4 4 0 010-8z M6 6h.01M9 6h.01',
+ dish:'M4 14h16a8 8 0 01-16 0z M12 14V4 M9 4h6 M18 6a2 2 0 110 4M20 3a1 1 0 110 2',
+ clean:'M9 8h7v12a1 1 0 01-1 1h-5a1 1 0 01-1-1V8z M10 8V5h4v3 M11 3h2 M5 5l3 1M4 9h3M5 13l3-1',
+ paper:'M5 5a3 3 0 013-3h8a3 3 0 013 3v14a3 3 0 01-3 3H8a3 3 0 01-3-3V5z M8 2a3 3 0 000 6h8 M12 11v7',
+ shampoo:'M9 8h7v12a1 1 0 01-1 1h-5a1 1 0 01-1-1V8z M10 8V6a2 2 0 012-2h2 M14 4V2 M11 12h3',
+ dental:'M5 19l6-6 M11 13l2-2 M13 11l5-5a2 2 0 013 3l-5 5 M4 20l1-1 M13 11l3 3',
+ deo:'M8 8h8v12a1 1 0 01-1 1H9a1 1 0 01-1-1V8z M10 8V5h4v3 M11 3h2 M18 6h.01M19 9h.01M17 11h.01',
+ baby:'M9 8h6v9a3 3 0 01-3 3 3 3 0 01-3-3V8z M9 8V6h6v2 M10 4h4v2h-4z M9 12h6',
+ hygiene:'M4 9h16v4a7 7 0 01-7 7h-2a7 7 0 01-7-7V9z M4 9V7a3 3 0 013-3h10a3 3 0 013 3v2',
+ pet:'M9 14a3 3 0 016 0c0 2-1.5 4-3 4s-3-2-3-4z M6 9a2 2 0 110 4 2 2 0 010-4z M18 9a2 2 0 110 4 2 2 0 010-4z M9 4a2 2 0 110 4 2 2 0 010-4z M15 4a2 2 0 110 4 2 2 0 010-4z',
+ home:'M3 11h18a9 9 0 01-9 8 9 9 0 01-9-8z M12 11V4M9 4h6 M19 4v6',
+ box:'M3 8l9-5 9 5v9l-9 5-9-5V8z M3 8l9 5 9-5M12 13v9',
+};
+const ic=c=>'<svg class="ic-sv" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="'+(ICONS[c]||ICONS.box)+'"/></svg>';
+
+/* ריבוע אחד בגודל קבוע לכל פריט, תמונה או אייקון. object-fit:contain
+   מכניס כל תמונה פנימה בלי לחתוך ובלי למתוח, ולכן יחס הגובה-רוחב
+   המקורי לא משנה: כל השורות יוצאות באותו גובה בדיוק. */
+const thumb=(it,size)=>{
+  const s=size||38;
+  if(it.img){
+    // התמונות מאוחסנות אצלנו כריבוע 160 על 160, ולכן אין צורך לחשוש
+    // ליחס גובה-רוחב. onerror מחליף באייקון אם קובץ חסר, כך ששום פריט
+    // לא נשאר עם ריבוע שבור.
+    return `<span class="th" style="--th:${s}px">`+
+           `<img src="img/${it.b}.webp" alt="" decoding="async" `+
+           `onerror="this.parentNode.classList.add('th-ic');this.parentNode.innerHTML=window.__icHTML('${it.i}')">`+
+           `</span>`;
+  }
+  return `<span class="th th-ic" style="--th:${s}px">${ic(it.i)}</span>`;
+};
+window.__icHTML=c=>ic(c);
+
+const LS="salHaham.basket.v3", LSTH="salHaham.theme.v1";
+let DATA=null, BASKET=load(), calculated=false, showAllChains=false, openCard=null;
+
+function load(){ try{ return JSON.parse(localStorage.getItem(LS))||[]; }catch(e){ return []; } }
+function save(){ try{ localStorage.setItem(LS,JSON.stringify(BASKET)); }catch(e){} }
+
+(function(){
+  let t=null; try{ t=localStorage.getItem(LSTH); }catch(e){}
+  if(t) document.documentElement.setAttribute("data-theme",t);
+  document.getElementById("themer").addEventListener("click",()=>{
+    const cur=document.documentElement.getAttribute("data-theme");
+    const nx=cur==="dark"?"light":"dark";
+    document.documentElement.setAttribute("data-theme",nx);
+    try{ localStorage.setItem(LSTH,nx); }catch(e){}
+  });
+})();
+
+const nis=n=>n.toLocaleString("he-IL",{minimumFractionDigits:2,maximumFractionDigits:2})+" ₪";
+let tT; function toast(m){
+  const e=document.getElementById("toast"); e.textContent=m; e.classList.add("on");
+  clearTimeout(tT); tT=setTimeout(()=>e.classList.remove("on"),2000);
+}
+
+// מספר המבנה שהקוד הזה יודע לקרוא. אם הנתונים בנויים אחרת, הדף שנטען הוא
+// גרסה ישנה ששרדה בזיכרון הדפדפן, והוא מציג שמות ריקים בלי שום שגיאה.
+// במקרה כזה מנקים הכל וטוענים מחדש, פעם אחת בלבד כדי לא להיתקע בלולאה.
+const SCHEMA = 7;
+async function hardRefresh(){
+  try{
+    for(const k of await caches.keys()) await caches.delete(k);
+    const regs = await navigator.serviceWorker?.getRegistrations?.() || [];
+    for(const r of regs) await r.unregister();
+  }catch(e){}
+  location.replace(location.pathname + "?v=" + Date.now());
+}
+
+const ss={
+  get(k){ try{ return sessionStorage.getItem(k); }catch(e){ return null; } },
+  set(k,v){ try{ sessionStorage.setItem(k,v); }catch(e){} },
+  del(k){ try{ sessionStorage.removeItem(k); }catch(e){} }
+};
+
+function fatal(msg){
+  const el=document.getElementById("hintB");
+  el.hidden=false;
+  el.style.color="var(--dear)";
+  el.innerHTML=msg+'<br><button class="btn" style="margin-top:9px" onclick="location.reload()">נסו שוב</button>';
+}
+
+/* ---------- כניסה ופענוח ----------
+   הנתונים מגיעים מוצפנים. קוד הגישה פותח עותק מוצפן של המפתח הראשי,
+   והמפתח הזה מפענח את קבצי הערים. בלי קוד תקף אין מה לקרוא, ולכן אין
+   כאן מסך שאפשר לדלג עליו. המפתח נשמר במכשיר כדי לא להקליד בכל פתיחה. */
+const LS_KEY = "salHaham.key.v1";
+let MASTER = null;
+
+const enc = new TextEncoder(), dec = new TextDecoder();
+const toHex = b => [...new Uint8Array(b)].map(x => x.toString(16).padStart(2, "0")).join("");
+const fromB64 = s => Uint8Array.from(atob(s), c => c.charCodeAt(0));
+const toB64 = b => btoa(String.fromCharCode(...new Uint8Array(b)));
+
+async function codeToId(code){
+  const d = await crypto.subtle.digest("SHA-256", enc.encode("salHaham:" + code));
+  return toHex(d).slice(0, 16);
+}
+
+async function unlock(code){
+  const meta = await fetch("keys.json", {cache:"no-store"}).then(r => {
+    if(!r.ok) throw new Error("HTTP " + r.status); return r.json(); });
+  const rec = meta.keys[await codeToId(code)];
+  if(!rec) return null;                       // קוד שאינו קיים או שבוטל
+  // פג תוקף נבדק כאן לנוחות ההודעה, אבל ההגנה האמיתית היא הסרת הרשומה
+  // מקובץ המפתחות: בלעדיה אין מה לפענח, גם אם מישהו עוקף את הבדיקה הזו.
+  if(rec.e && Date.now()/1000 > rec.e) return "expired";
+  const base = await crypto.subtle.importKey("raw", enc.encode(code), "PBKDF2", false, ["deriveKey"]);
+  const kek = await crypto.subtle.deriveKey(
+    {name:"PBKDF2", salt:fromB64(rec.s), iterations:meta.it, hash:"SHA-256"},
+    base, {name:"AES-GCM", length:256}, false, ["decrypt"]);
+  try{
+    const raw = await crypto.subtle.decrypt({name:"AES-GCM", iv:fromB64(rec.n)}, kek, fromB64(rec.w));
+    return await crypto.subtle.importKey("raw", raw, "AES-GCM", true, ["decrypt"]);
+  }catch(e){ return null; }
+}
+
+async function getEnc(url){
+  const buf = await fetch(url, {cache:"no-store"}).then(r => {
+    if(!r.ok) throw new Error("HTTP " + r.status); return r.arrayBuffer(); });
+  const plain = await crypto.subtle.decrypt(
+    {name:"AES-GCM", iv:new Uint8Array(buf, 0, 12)}, MASTER, new Uint8Array(buf, 12));
+  return JSON.parse(dec.decode(plain));
+}
+
+async function saveKey(){
+  try{
+    const raw = await crypto.subtle.exportKey("raw", MASTER);
+    localStorage.setItem(LS_KEY, toB64(raw));
+  }catch(e){}
+}
+async function loadKey(){
+  try{
+    const s = localStorage.getItem(LS_KEY);
+    if(!s) return null;
+    return await crypto.subtle.importKey("raw", fromB64(s), "AES-GCM", true, ["decrypt"]);
+  }catch(e){ return null; }
+}
+
+const LS_CITY = "salHaham.city.v1";
+let CITIES = null, CITY = null;
+function saveCity(slug){ try{ localStorage.setItem(LS_CITY, slug); }catch(e){} }
+function readCity(){ try{ return localStorage.getItem(LS_CITY); }catch(e){ return null; } }
+
+// מרחק בקו אווירי, בקילומטרים. די בקירוב הזה כדי לבחור עיר מתוך שבעים,
+// והמיקום נשאר במכשיר ולא נשלח לשום שירות.
+function distKm(a, b, c, d){
+  const R = 6371, r = Math.PI / 180;
+  const dLat = (c - a) * r, dLon = (d - b) * r;
+  const x = Math.sin(dLat/2) ** 2 + Math.cos(a*r) * Math.cos(c*r) * Math.sin(dLon/2) ** 2;
+  return 2 * R * Math.asin(Math.sqrt(x));
+}
+
+function renderCityList(term){
+  const host = document.getElementById("cityList");
+  host.innerHTML = "";
+  if(!CITIES) return;
+  const t = (term || "").trim();
+  const list = (t ? CITIES.cities.filter(c => c.c.includes(t)) : CITIES.cities).slice(0, 40);
+  const hint = document.getElementById("cityHint");
+  if(!list.length){ hint.textContent = 'לא נמצאה עיר בשם "' + t + '".'; return; }
+  hint.textContent = t ? (list.length + " תוצאות") : (CITIES.cities.length + " ערים זמינות");
+  list.forEach(c => {
+    const b = document.createElement("button");
+    b.className = "cityrow"; b.type = "button";
+    b.innerHTML = '<span></span><small>' + c.ch + ' רשתות</small>';
+    b.querySelector("span").textContent = c.c;
+    b.addEventListener("click", () => pickCity(c.s));
+    host.appendChild(b);
+  });
+}
+
+async function pickCity(slug){
+  const row = CITIES.cities.find(c => c.s === slug);
+  if(!row) return;
+  document.getElementById("cityHint").textContent = "טוען מחירים…";
+  try{
+    const d = await getEnc("cities/" + slug + ".bin");
+    if(d.schema !== SCHEMA){
+      if(!ss.get("salHaham.refreshed")){ ss.set("salHaham.refreshed", "1"); return hardRefresh(); }
+      fatal("הגרסה שנטענה אינה תואמת לנתונים. סגרו את הלשונית ופתחו מחדש."); return;
+    }
+    ss.del("salHaham.refreshed");
+    DATA = d; CITY = row; saveCity(slug);
+    document.getElementById("cityNow").textContent = d.city;
+    document.getElementById("nCh").textContent = d.chains.length;
+    document.getElementById("gen").textContent = d.generated;
+    document.getElementById("cityPanel").hidden = true;
+    document.getElementById("modes").hidden = false;
+    document.getElementById("paneBasket").hidden = false;
+    document.getElementById("changeCity").hidden = false;
+    document.getElementById("qb").disabled = false;
+    document.getElementById("qf").disabled = false;
+    const l = document.getElementById("loading"); if(l) l.hidden = true;
+    BASKET = load(); calculated = false;
+    renderCollected(); document.getElementById("result").innerHTML = "";
+    scrollTo({top:0, behavior:"smooth"});
+  }catch(err){
+    document.getElementById("cityHint").textContent = "לא הצלחתי לטעון את " + row.c + ". נסו שוב.";
+  }
+}
+
+document.getElementById("changeCity").addEventListener("click", () => {
+  document.getElementById("cityPanel").hidden = false;
+  document.getElementById("modes").hidden = true;
+  document.getElementById("paneBasket").hidden = true;
+  document.getElementById("paneFind").hidden = true;
+  document.getElementById("citySearch").value = "";
+  renderCityList("");
+  scrollTo({top:0, behavior:"smooth"});
+});
+document.getElementById("citySearch").addEventListener("input", e => renderCityList(e.target.value));
+
+document.getElementById("useLoc").addEventListener("click", () => {
+  const hint = document.getElementById("cityHint");
+  if(!navigator.geolocation){
+    hint.textContent = "המכשיר הזה לא מאפשר איתור מיקום. בחרו עיר מהרשימה."; return;
+  }
+  hint.textContent = "מאתר…";
+  navigator.geolocation.getCurrentPosition(pos => {
+    const la = pos.coords.latitude, lo = pos.coords.longitude;
+    let best = null, bestD = 1e9;
+    CITIES.cities.forEach(c => {
+      if(!c.lat) return;
+      const d = distKm(la, lo, c.lat, c.lon);
+      if(d < bestD){ bestD = d; best = c; }
+    });
+    if(!best){ hint.textContent = "לא הצלחתי להתאים עיר. בחרו מהרשימה."; return; }
+    hint.textContent = "נמצאת " + best.c + ", כ-" + bestD.toFixed(0) + " קילומטר ממך.";
+    pickCity(best.s);
+  }, err => {
+    hint.textContent = err.code === 1
+      ? "לא ניתנה הרשאת מיקום. בחרו עיר מהרשימה."
+      : "לא הצלחתי לאתר מיקום. בחרו עיר מהרשימה.";
+  }, {timeout:12000, maximumAge:600000});
+});
+
+async function afterUnlock(){
+  document.getElementById("gate").hidden = true;
+  document.getElementById("cityPanel").hidden = false;
+  document.getElementById("signOut").hidden = false;
+  try{
+    CITIES = await getEnc("cities.bin");
+  }catch(e){
+    document.getElementById("cityHint").textContent = "לא הצלחתי לטעון את רשימת הערים.";
+    return;
+  }
+  renderCityList("");
+  const saved = readCity();
+  if(saved && CITIES.cities.some(c => c.s === saved)) pickCity(saved);
+}
+
+async function tryCode(){
+  const inp = document.getElementById("codeInput");
+  const hint = document.getElementById("codeHint");
+  const code = inp.value.trim().toUpperCase();
+  if(code.length < 10){ hint.textContent = "הקוד קצר מדי."; return; }
+  hint.textContent = "בודק…";
+  let key = null;
+  try{ key = await unlock(code); }
+  catch(e){ hint.textContent = "לא הצלחתי לבדוק את הקוד. בדקו את החיבור."; return; }
+  if(key === "expired"){
+    hint.style.color = "var(--dear)";
+    hint.textContent = "תוקף הקוד פג. בקשו קוד חדש.";
+    return;
+  }
+  if(!key){
+    hint.style.color = "var(--dear)";
+    hint.textContent = "הקוד שגוי או בוטל.";
+    return;
+  }
+  MASTER = key; await saveKey();
+  hint.style.color = ""; hint.textContent = "";
+  afterUnlock();
+}
+
+document.getElementById("codeGo").addEventListener("click", tryCode);
+document.getElementById("codeInput").addEventListener("keydown", e => {
+  if(e.key === "Enter") tryCode();
+});
+document.getElementById("codeInput").addEventListener("input", e => {
+  // עוזר להקליד: אותיות גדולות ומקפים אוטומטיים
+  const v = e.target.value.toUpperCase().replace(/[^A-Z0-9]/g, "").slice(0, 12);
+  e.target.value = v.replace(/(.{4})(?=.)/g, "$1-");
+});
+document.getElementById("signOut").addEventListener("click", () => {
+  try{ localStorage.removeItem(LS_KEY); }catch(e){}
+  location.reload();
+});
+
+(async () => {
+  const k = await loadKey();
+  if(k){ MASTER = k; afterUnlock(); }
+  else { document.getElementById("codeInput").focus(); }
+})();
+
+/* mode switch */
+const MODES=[["mBasket","paneBasket"],["mFind","paneFind"]];
+MODES.forEach(([b,p])=>{
+  document.getElementById(b).addEventListener("click",()=>{
+    MODES.forEach(([b2,p2])=>{
+      const on=b2===b;
+      document.getElementById(b2).setAttribute("aria-pressed",on?"true":"false");
+      document.getElementById(p2).hidden=!on;
+    });
+  });
+});
+
+/* סוגי המוצרים שמשק בית קונה, מסודרים לפי מדף. כל מילה כאן היא חיפוש,
+   ולא קטגוריה סגורה: הלחיצה ממלאת את תיבת החיפוש ופותחת את כל ההתאמות. */
+const FRESH_ONLY=new Set(["ירקות","פירות"]);
+const GROUPS=[
+ ["מוצרי חלב","milk", ["חלב","קוטג","גבינה","גבינת","יוגורט","שמנת","חמאה","מעדן","לבן","אשל","מוצרלה","צהובה","בולגרית","פטה","ריקוטה","שוקו"]],
+ ["בשר, עוף והודו","meat", ["עוף","חזה עוף","שניצל","כרעיים","כנפיים","פרגית","בשר טחון","אנטריקוט","סטייק","המבורגר","קבב","נקניק","נקניקיות","הודו","כבד","שווארמה","אסאדו"]],
+ ["דגים","fish", ["טונה","סלמון","דג","פילה דג","מלוח","הרינג","סרדינים"]],
+ ["ירקות","veg", ["עגבניה","מלפפון","בצל","גזר","תפוח אדמה","בטטה","פלפל","חסה","כרוב","כרובית","ברוקולי","קישוא","חציל","שום","דלעת","תירס","סלרי","פטרוזיליה","כוסברה","נענע","שמיר","אבוקדו","לימון"]],
+ ["פירות","fruit", ["תפוח","בננה","תפוז","קלמנטינה","אשכולית","ענבים","אבטיח","מלון","אפרסק","נקטרינה","שזיף","אגס","תות","רימון","מנגו","אננס","קיווי","תמרים","אבטיח"]],
+ ["לחם ומאפים","bread", ["לחם","פיתות","לחמניות","חלה","בגט","טורטיה","פיתה","מצות","קרקר"]],
+ ["מזווה ויסודות","rice", ["אורז","פסטה","ספגטי","קמח","סוכר","מלח","שמן","שמן זית","קוסקוס","בורגול","קינואה","עדשים","חומוס","שעועית","פתיתים","נודלס","אבקת מרק","טחינה","קטשופ","מיונז","חרדל","ריבה","דבש","ממרח","שימורים","רוטב"]],
+ ["קפה, תה ומשקה חם","coffee", ["קפה","נס קפה","תה","סוכרזית","שוקולית","קקאו"]],
+ ["משקאות","soda", ["קולה","מים","מיץ","סודה","משקה","בירה","יין","נביעות","פריגת","פרימור","XL","אייס"]],
+ ["חטיפים ומתוקים","snack", ["במבה","ביסלי","שוקולד","עוגיות","ופל","חטיף","צ'יפס","בייגלה","סוכריות","מסטיק","עוגה","פופקורן","אגוזים","שקדים","פיצוחים"]],
+ ["קפואים","frozen", ["פיצה","קפוא","אפונה","תערובת ירקות","צ'יפס קפוא","גלידה","בצק","מאפה"]],
+ ["דגני בוקר","cereal", ["קורנפלקס","גרנולה","דגני","פתיתי","שיבולת שועל","חלבה"]],
+ ["ניקיון","clean", ["אבקת כביסה","ג'ל כביסה","מרכך כביסה","סבון כלים","אקונומיקה","נוזל רצפות","מנקה","מטהר","וניש","אריאל","פרסיל","טאבלט מדיח","מגבונים","שקיות אשפה","ספוג","מטלית","נייר סופג","כפפות"]],
+ ["טואלטיקה","shampoo", ["נייר טואלט","שמפו","מרכך שיער","סבון","אל סבון","מקלחת","דאודורנט","משחת שיניים","מברשת שיניים","מי פה","גילוח","קרם","תחבושות","טמפונים","חיתולים","מגבונים לחים"]],
+ ["תינוקות וחיות","baby", ["מטרנה","סימילאק","דייסה","חיתולים","מזון לכלב","מזון לחתול","חול לחתול"]],
+];
+function buildQuick(){
+  [["quickB","qb",termB],["quickF","qf",termF]].forEach(([host,input,fn])=>{
+    const h=document.getElementById(host);
+    h.innerHTML="";
+    GROUPS.forEach(([title,icon,words])=>{
+      const sec=document.createElement("div"); sec.className="cat";
+      const hd=document.createElement("button");
+      hd.type="button"; hd.className="cat-hd"; hd.setAttribute("aria-expanded","false");
+      hd.innerHTML=`<span class="ic-w">${ic(icon)}</span><span class="ct"></span><span class="chev">+</span>`;
+      hd.querySelector(".ct").textContent=title;
+      const body=document.createElement("div"); body.className="cat-body"; body.hidden=true;
+      words.forEach(w=>{
+        const b=document.createElement("button"); b.type="button"; b.textContent=w;
+        b.addEventListener("click",()=>{
+          if(!DATA){ toast("המחירים עוד נטענים, רגע אחד"); return; }
+          document.getElementById(input).value=w;
+          fn(w, host==="quickB" ? FRESH_ONLY.has(title) : undefined);
+          if(host==="quickB"){
+            moveSugg(body);              // התוצאות נפתחות כאן, מתחת לכפתור
+            [...body.children].forEach(x=>x.classList.toggle("on", x===b));
+            b.scrollIntoView({behavior:"smooth", block:"center"});
+          }else{
+            document.getElementById(input).scrollIntoView({behavior:"smooth",block:"center"});
+          }
+        });
+        body.appendChild(b);
+      });
+      hd.addEventListener("click",()=>{
+        const open=!body.hidden;
+        // קטגוריה אחת פתוחה בכל רגע. בלי זה הרשימה מתארכת עם כל פתיחה
+        // והכותרות נדחפות מחוץ למסך.
+        h.querySelectorAll(".cat-hd").forEach(x=>{
+          if(x===hd) return;
+          x.nextElementSibling.hidden=true;
+          x.setAttribute("aria-expanded","false");
+          x.querySelector(".chev").textContent="+";
+        });
+        body.hidden=open;
+        hd.setAttribute("aria-expanded", open?"false":"true");
+        hd.querySelector(".chev").textContent= open?"+":"−";
+        moveSugg(null);
+        [...body.children].forEach(x=>x.classList&&x.classList.remove("on"));
+        if(!open) hd.scrollIntoView({behavior:"smooth",block:"nearest"});
+      });
+      sec.appendChild(hd); sec.appendChild(body); h.appendChild(sec);
+    });
+  });
+}
+const byCode=b=>DATA?DATA.items.find(x=>x.b===b):null;
+const storeName=i=>(i==null?"":(DATA.stores[i]||""));
+
+/* דירוג התוצאות. מי שמקליד "חלב" מתכוון ל"חלב תנובה 3%", לא ל"כיף כף חלב"
+   ולא ל"דנונה חלבון". לכן ארבע רמות, מהחזקה לחלשה:
+     0  השם פותח במילה המדויקת        "חלב תנובה 3%"
+     1  המילה המדויקת מופיעה בהמשך     "משקה חלב בננה"
+     2  מילה שמתחילה בה                "חלבון", "חלבי"
+     3  רצף אותיות בתוך מילה           הכל השאר
+   בתוך אותה רמה נשמר הסדר המקורי, שכבר ממוין לפי נפוצוּת המוצר. */
+function match(term, freshOnly){
+  if(!DATA) return [];
+  const t=term.trim();
+  if(t.length<2) return [];
+  const buckets=[[],[],[],[]];
+  const pool = freshOnly ? DATA.items.filter(x=>x.f) : DATA.items;
+  for(const it of pool){
+    const words=it.n.split(/[\s,.\-()\/]+/).filter(Boolean);
+    let tier=-1;
+    if(words[0]===t) tier=0;
+    else if(words.includes(t)) tier=1;
+    else if(words.some(w=>w.startsWith(t))) tier=2;
+    else if(it.n.includes(t)) tier=3;
+    if(tier>=0) buckets[tier].push(it);
+    if(buckets[0].length+buckets[1].length>80) break;
+  }
+  // בתוך כל רמה, מוצר טרי קודם. מי שמחפש "עגבניה" מתכוון לעגבנייה,
+  // לא לרוטב עגבניות, גם אם הרוטב נמכר ביותר רשתות.
+  buckets.forEach(b=>b.sort((x,y)=>(y.f||0)-(x.f||0)));
+  return [...buckets[0],...buckets[1],...buckets[2],...buckets[3]];
+}
+
+/* ---------- basket mode ---------- */
+document.getElementById("qb").addEventListener("input",e=>{
+  moveSugg(null);
+  document.querySelectorAll("#quickB .cat-body button.on").forEach(x=>x.classList.remove("on"));
+  termB(e.target.value, false);
+});
+/* אזור התוצאות נודד: הוא נפתח בתוך הקטגוריה שנלחצה, וחוזר אל מתחת לתיבת
+   החיפוש כשמקלידים ידנית. אלמנט אחד שזז, ולא שני אזורי תוצאות שצריך לסנכרן. */
+let suggHome=null;
+function moveSugg(into){
+  const s=document.getElementById("sugg");
+  if(!suggHome) suggHome=s.parentNode;
+  const target=into||suggHome;
+  if(s.parentNode!==target) target.appendChild(s);
+}
+
+// כשפותחים "ירקות" או "פירות" מצפים לירק, לא לרוטב או לשימורים.
+// שם הקטגוריה נשמר בלחיצה, ומכאן הסינון.
+let bFresh=false;
+function termB(term, freshOnly){
+  if(!DATA) return;
+  if(freshOnly!==undefined) bFresh=freshOnly;
+  const host=document.getElementById("sugg"); host.innerHTML="";
+  const hint=document.getElementById("hintB");
+  const t=(term||"").trim();
+  if(t.length<2){ hint.hidden=false; hint.textContent="כל מוצר שתוסיפו ייספר למטה."; return; }
+  const hits=match(t, bFresh).slice(0,25);
+  if(!hits.length){
+    hint.hidden=false;
+    hint.innerHTML = bFresh
+      ? `לא נמצא מוצר טרי בשם "<b>${t}</b>". לגרסה משומרת או ברוטב, חפשו למעלה בתיבה.`
+      : `לא נמצא מוצר שמתחיל ב"<b>${t}</b>". נסו מילה אחת בלבד.`;
+    return;
+  }
+  hint.hidden=true;
+  hits.forEach(it=>{
+    const have=BASKET.includes(it.b);
+    const r=document.createElement("div"); r.className="sg"+(have?" have":"");
+    r.innerHTML=`${thumb(it,40)}<span class="nm"></span>
+      <span class="pr">${it.f?'<span class="fresh">טרי</span>':''}מ־<b>${nis(it.lo)}</b></span>
+      <button type="button" aria-label="הוסף">${have?"✓":"+"}</button>`;
+    r.querySelector(".nm").textContent=it.n;
+    r.querySelector("button").addEventListener("click",()=>{
+      if(BASKET.includes(it.b)) return;
+      BASKET.push(it.b); save(); calculated=false;
+      renderCollected(); termB(document.getElementById("qb").value);
+      document.getElementById("result").innerHTML="";
+      toast("נוסף לסל");
+    });
+    host.appendChild(r);
+  });
+}
+
+function renderCollected(){
+  // פריט שאינו נמכר בעיר הנוכחית נשאר בסל ומוצג מעומעם. מחיקה שקטה שלו
+  // בהחלפת עיר נראית כאילו הסל נמחק, והמשתמש בונה אותו שוב מאפס.
+  const items=BASKET.map(b=>byCode(b)||{b, n:null, missing:true});
+  const box=document.getElementById("collected");
+  box.hidden = items.length===0;
+  const here=items.filter(x=>!x.missing).length;
+  document.getElementById("cnt").textContent = here===items.length
+    ? `אספתם ${items.length} מוצרים`
+    : `אספתם ${items.length} מוצרים · ${items.length-here} לא נמכרים בעיר הזו`;
+  const host=document.getElementById("pills"); host.innerHTML="";
+  items.forEach(it=>{
+    const p=document.createElement("div");
+    p.className="pill"+(it.missing?" gone":"");
+    p.innerHTML=`${it.missing?'<span class="th th-ic" style="--th:30px">'+ic("box")+'</span>':thumb(it,30)}
+      <span class="pn"></span>
+      <button type="button" aria-label="הסר">✕</button>`;
+    p.querySelector(".pn").textContent = it.n || "לא נמכר בעיר הזו";
+    p.querySelector("button").addEventListener("click",()=>{
+      BASKET=BASKET.filter(b=>b!==it.b); save(); calculated=false;
+      renderCollected(); termB(document.getElementById("qb").value);
+      document.getElementById("result").innerHTML="";
+    });
+    host.appendChild(p);
+  });
+  document.getElementById("calc").disabled = items.length===0;
+}
+
+document.getElementById("reset").addEventListener("click",()=>{
+  BASKET=[]; calculated=false; showAllChains=false; save();
+  renderCollected(); termB(document.getElementById("qb").value);
+  document.getElementById("result").innerHTML=""; toast("הסל אופס");
+});
+document.getElementById("calc").addEventListener("click",()=>{
+  calculated=true; showAllChains=false; renderResult();
+  document.getElementById("result").scrollIntoView({behavior:"smooth",block:"start"});
+});
+
+function renderResult(){
+  const box=document.getElementById("result");
+  const items=BASKET.map(byCode).filter(Boolean);   // רק מה שנמכר כאן
+  box.innerHTML="";
+  if(!calculated || !items.length) return;
+
+  // כמה עולה הסל השלם אם מתחילים ברשת הזו.
+  //
+  // השאלה היא "כמה אשלם על כל הסל", ולכן מוצר שהרשת לא מוכרת נספר במחיר
+  // הזול ביותר שקיים במקום אחר, והקנייה מתפצלת. חייבים לספור אותו: בלעדיו
+  // רשת שמוכרת שלושה מוצרים נראית זולה מרשת שמוכרת שבעה, וזו השוואה בין
+  // שני סלים שונים שהציגה את היקר כזול.
+  const totals=DATA.chains.map((c,i)=>{
+    let here=0, elsewhere=0, have=0, missing=0;
+    items.forEach(it=>{
+      const v=it.p[i];
+      if(v==null){ missing++; elsewhere+=it.lo; } else { have++; here+=v; }
+    });
+    return {i, name:c.n, here, elsewhere, total:here+elsewhere, have, missing};
+  });
+  const ranked=totals.filter(t=>t.have>0).sort((a,b)=>a.total-b.total || b.have-a.have);
+  if(!ranked.length){
+    const s=document.createElement("section"); s.className="verdict";
+    s.innerHTML='<div class="top"><div class="cap">הסל שלכם</div>'+
+      '<p style="margin:8px 0 0;font-size:14px;color:var(--ink-2)">אף רשת לא מוכרת את המוצרים האלה.</p></div>';
+    box.appendChild(s); return;
+  }
+
+  const best=ranked[0], bi=best.i;
+  const worst=ranked[ranked.length-1];
+  const oneStop=totals.filter(t=>t.missing===0).sort((a,b)=>a.total-b.total)[0]||null;
+
+  const sec=document.createElement("section"); sec.className="verdict";
+
+  // הסניף שמחזיק את המחיר הזול הכי הרבה פעמים ברשת המנצחת
+  const tally={};
+  items.forEach(it=>{ const w=storeName(it.w[bi]); if(w) tally[w]=(tally[w]||0)+1; });
+  const branch=Object.keys(tally).sort((a,b)=>tally[b]-tally[a])[0]||"";
+
+  const split = best.missing
+    ? `${best.have} מוצרים שם ב-<b>${nis(best.here)}</b>, ועוד ${best.missing} שתצטרכו לקנות במקום אחר ב-<b>${nis(best.elsewhere)}</b>.`
+    : `כל ${items.length} המוצרים נמכרים שם.`;
+
+  sec.innerHTML=`<div class="top">
+    <div class="cap">הסל הזול ביותר</div>
+    <div class="winner">
+      <span class="nm"></span><span class="amt">${nis(best.total)}</span>
+      <span class="where"></span>
+    </div>
+    <div class="saveline">${split}
+      חוסך <b>${nis(worst.total-best.total)}</b> לעומת האפשרות היקרה ביותר.
+    </div></div>`;
+  sec.querySelector(".winner .nm").textContent=best.name;
+  sec.querySelector(".winner .where").textContent = branch ? "הסניף הזול: "+branch : "";
+
+  // אם הזול דורש כמה עצירות, הקנייה במקום אחד היא אלטרנטיבה אמיתית
+  if(best.missing && oneStop && oneStop.i!==bi){
+    const d=document.createElement("div"); d.className="overnote";
+    d.style.background="var(--accent-soft)"; d.style.borderTopColor="var(--line)";
+    const extra=oneStop.total-best.total;
+    d.innerHTML=`להכל במקום אחד: <b style="color:var(--accent)">${oneStop.name}</b> ב-`+
+      `<b style="color:var(--accent)">${nis(oneStop.total)}</b>, `+
+      (extra>0.005 ? `יקר ב-<b style="color:var(--accent)">${nis(extra)}</b> אבל בעצירה אחת.`
+                   : `ובאותו מחיר.`);
+    sec.appendChild(d);
+  }
+
+  // שורה לכל מוצר: המחיר ברשת המנצחת, או היכן לקנות אותו אם אינו נמכר שם
+  const ls=document.createElement("div"); ls.className="lines";
+  let over=0, overN=0;
+  items.forEach(it=>{
+    const here=it.p[bi];
+    let alt=null;
+    it.p.forEach((v,i)=>{
+      if(v==null||i===bi) return;
+      if(!alt||v<alt.price) alt={price:v, chain:DATA.chains[i].n};
+    });
+    const row=document.createElement("div");
+    if(here==null){
+      const cheapest=it.p.indexOf(it.lo);
+      row.className="ln miss";
+      row.innerHTML=`${thumb(it,34)}<span class="nm"></span><span class="amt">${nis(it.lo)}</span>`;
+      row.querySelector(".nm").textContent=it.n;
+      const a=document.createElement("span"); a.className="alt"; a.style.color="var(--muted)";
+      a.innerHTML=`לא נמכר ב${best.name}. הכי זול ב<b>${DATA.chains[cheapest]?.n||""}</b>.`;
+      row.appendChild(a);
+    }else{
+      const gap=(alt && alt.price<here-0.005) ? here-alt.price : 0;
+      if(gap>0){ over+=gap; overN++; }
+      row.className="ln"+(gap>0?" over":"");
+      row.innerHTML=`${thumb(it,34)}<span class="nm"></span>
+        <span class="amt">${nis(here)}</span>${gap>0?'<span class="warn-dot">⚠</span>':''}`;
+      row.querySelector(".nm").textContent=it.n;
+      if(gap>0){
+        const a=document.createElement("span"); a.className="alt";
+        a.innerHTML=`ב<b>${alt.chain}</b> עולה ${nis(alt.price)}, חריגה של <b>${nis(gap)}</b>`;
+        row.appendChild(a);
+      }
+    }
+    ls.appendChild(row);
+  });
+  sec.appendChild(ls);
+
+  const bar=document.createElement("div"); bar.className="totbar";
+  bar.innerHTML=`<span>סה״כ לסל השלם</span><b>${nis(best.total)}</b>`;
+  sec.appendChild(bar);
+
+  if(over>0.005){
+    const n=document.createElement("div"); n.className="overnote";
+    n.innerHTML=`${overN} מוצרים זולים יותר ברשת אחרת. פיצול מלא של הקנייה `+
+      `היה חוסך עוד <b>${nis(over)}</b>, אבל דורש מעבר בין עוד חנויות.`;
+    sec.appendChild(n);
+  }
+
+  const t2=document.createElement("div"); t2.className="secttl";
+  t2.innerHTML=`עלות הסל השלם בכל רשת<br><span style="font-family:Assistant,sans-serif;font-weight:400;font-size:12.5px;color:var(--muted);line-height:1.5">הסכום הוא תמיד על כל ${items.length} המוצרים. מוצר שהרשת לא מוכרת נספר לפי המחיר הזול ביותר במקום אחר, ולכן כל השורות ניתנות להשוואה ישירה.</span>`;
+  sec.appendChild(t2);
+
+  const rl=document.createElement("div");
+  ranked.forEach((t,i)=>{
+    const r=document.createElement("div");
+    r.className="rk"+(i===0?" first":"");
+    const diff = i>0 ? `<span class="diff">+${nis(t.total-best.total)}</span>` : "";
+    const gap  = t.missing
+      ? `<span class="gap">${t.have} שם, ${t.missing} במקום אחר</span>`
+      : `<span class="gap">הכל בעצירה אחת</span>`;
+    r.innerHTML=`<span class="pos">${i+1}</span><span class="nm"></span>
+      <span class="amt">${nis(t.total)}</span>`;
+    const nm=r.querySelector(".nm"); nm.textContent=t.name;
+    nm.insertAdjacentHTML("beforeend","<br>"+gap+(diff?" "+diff:""));
+    rl.appendChild(r);
+  });
+  sec.appendChild(rl);
+  box.appendChild(sec);
+}
+
+
+/* ---------- single product mode ---------- */
+document.getElementById("qf").addEventListener("input",e=>termF(e.target.value));
+function termF(term){
+  if(!DATA) return;
+  const t=(term||"").trim();
+  const host=document.getElementById("cardsF"), cnt=document.getElementById("countF");
+  host.innerHTML="";
+  if(t.length<2){
+    cnt.textContent="הקלידו שם מוצר כדי לראות את המחיר בכל הרשתות.";
+    return;
+  }
+  const hits=match(t).slice(0,8);
+  cnt.textContent = hits.length ? `${hits.length} תוצאות` : `לא נמצא מוצר בשם "${t}"`;
+  if(!hits.length){
+    host.innerHTML='<div class="empty">נסו מילה אחת בלבד, למשל <b>קוטג</b>.</div>';
+    return;
+  }
+  hits.forEach(it=>host.appendChild(cardFor(it)));
+}
+
+function cardFor(it){
+  const rows=it.p.map((v,i)=>({price:v, chain:DATA.chains[i].n, where:storeName(it.w[i])}))
+                 .filter(r=>r.price!=null).sort((a,b)=>a.price-b.price);
+  const lo=rows[0].price;
+  const card=document.createElement("div"); card.className="card";
+  const h=document.createElement("h3");
+  h.innerHTML=`${thumb(it,46)}<span></span>`;
+  h.querySelector("span:last-child").textContent=it.n; card.appendChild(h);
+  const sl=document.createElement("div"); sl.className="sl";
+  sl.innerHTML=`הכי זול ב<b>${rows[0].chain}</b> · נמכר ב-${rows.length} רשתות`;
+  card.appendChild(sl);
+  const tbl=document.createElement("table"), tb=document.createElement("tbody");
+  rows.forEach((r,i)=>{
+    const tr=document.createElement("tr"); if(i===0) tr.className="best";
+    tr.innerHTML=`<td class="rank">${i+1}</td>
+      <td class="store"><span></span><small></small></td>
+      <td class="price">${nis(r.price)}</td>
+      <td class="extra">${i===0?"הכי זול":"+"+nis(r.price-lo)}</td>`;
+    tr.querySelector(".store span").textContent=r.chain;
+    tr.querySelector(".store small").textContent=r.where||"";
+    tb.appendChild(tr);
+  });
+  tbl.appendChild(tb); card.appendChild(tbl);
+  return card;
+}
+
+buildQuick();
+</script>
+
+<div id="installBar" hidden style="
+  position:fixed; inset-inline:12px; bottom:calc(12px + env(safe-area-inset-bottom));
+  background:var(--surface); border:1px solid var(--accent); border-radius:12px;
+  padding:12px 14px; display:flex; align-items:center; gap:12px; z-index:20;
+  box-shadow:0 8px 32px -12px rgba(0,0,0,.4); max-width:520px; margin:0 auto;">
+  <div style="flex:1; font-size:13.5px; line-height:1.4; color:var(--ink)">
+    <b>להתקין את סל חכם?</b><br>
+    <span style="color:var(--muted)">תיפתח כאפליקציה, ותעבוד גם בלי אינטרנט.</span>
+  </div>
+  <button id="installYes" class="btn primary" type="button">התקן</button>
+  <button id="installNo" class="btn" type="button" aria-label="לא עכשיו">✕</button>
+</div>
+<script>
+// service worker: בלעדיו אין התקנה ואין עבודה אופליין.
+if ("serviceWorker" in navigator) {
+  addEventListener("load", () => {
+    navigator.serviceWorker.register("sw.js").catch(err =>
+      console.warn("רישום ה-service worker נכשל:", err));
+  });
+}
+// שורת ההתקנה מוצגת רק כשהדפדפן באמת מציע להתקין, ומושתקת ל-30 יום אחרי סירוב.
+(function(){
+  const SNOOZE = "salHaham.installSnooze";
+  let deferred = null;
+  const bar = document.getElementById("installBar");
+  const snoozed = () => {
+    try { return Number(localStorage.getItem(SNOOZE) || 0) > Date.now(); }
+    catch(e){ return false; }
+  };
+  addEventListener("beforeinstallprompt", e => {
+    e.preventDefault(); deferred = e;
+    if (!snoozed()) bar.hidden = false;
+  });
+  document.getElementById("installYes").addEventListener("click", async () => {
+    bar.hidden = true;
+    if (!deferred) return;
+    deferred.prompt();
+    await deferred.userChoice;
+    deferred = null;
+  });
+  document.getElementById("installNo").addEventListener("click", () => {
+    bar.hidden = true;
+    try { localStorage.setItem(SNOOZE, String(Date.now() + 30*864e5)); } catch(e){}
+  });
+  addEventListener("appinstalled", () => { bar.hidden = true; });
+})();
+</script>
+</body>
+</html>
