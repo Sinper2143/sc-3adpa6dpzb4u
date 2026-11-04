@@ -481,22 +481,45 @@ async function codeToId(code){
   return toHex(d).slice(0, 16);
 }
 
-async function unlock(code){
-  const meta = await fetch("keys.json", {cache:"no-store"}).then(r => {
-    if(!r.ok) throw new Error("HTTP " + r.status); return r.json(); });
-  const rec = meta.keys[await codeToId(code)];
-  if(!rec) return null;                       // קוד שאינו קיים או שבוטל
-  // פג תוקף נבדק כאן לנוחות ההודעה, אבל ההגנה האמיתית היא הסרת הרשומה
-  // מקובץ המפתחות: בלעדיה אין מה לפענח, גם אם מישהו עוקף את הבדיקה הזו.
-  if(rec.e && Date.now()/1000 > rec.e) return "expired";
-  const base = await crypto.subtle.importKey("raw", enc.encode(code), "PBKDF2", false, ["deriveKey"]);
-  const kek = await crypto.subtle.deriveKey(
-    {name:"PBKDF2", salt:fromB64(rec.s), iterations:meta.it, hash:"SHA-256"},
-    base, {name:"AES-GCM", length:256}, false, ["decrypt"]);
+const GATE = "https://gate-ovfu4zqps1.vercel.app/api/unlock";
+
+/* מזהה מכשיר. נוצר פעם אחת ונשמר, ומשמש את השער כדי לקשור קוד למכשיר
+   יחיד. אינו מכיל שום פרט מזהה על המשתמש, רק מספר אקראי. */
+function deviceId(){
+  const K = "salHaham.device.v1";
   try{
-    const raw = await crypto.subtle.decrypt({name:"AES-GCM", iv:fromB64(rec.n)}, kek, fromB64(rec.w));
-    return await crypto.subtle.importKey("raw", raw, "AES-GCM", true, ["decrypt"]);
-  }catch(e){ return null; }
+    let d = localStorage.getItem(K);
+    if(!d){
+      d = [...crypto.getRandomValues(new Uint8Array(16))]
+            .map(b=>b.toString(16).padStart(2,"0")).join("");
+      localStorage.setItem(K, d);
+    }
+    return d;
+  }catch(e){
+    return "nostore-" + Math.random().toString(16).slice(2);
+  }
+}
+
+async function unlock(code){
+  let r;
+  try{
+    r = await fetch(GATE, {
+      method: "POST",
+      headers: {"content-type": "application/json"},
+      body: JSON.stringify({code, device: deviceId()}),
+    });
+  }catch(e){ return "offline"; }
+  if(r.status === 403){
+    const j = await r.json().catch(()=>({}));
+    return j.error === "other_device" ? "other_device"
+         : j.error === "expired"      ? "expired"
+         : null;
+  }
+  if(!r.ok) return "offline";
+  const j = await r.json();
+  if(!j.key) return null;
+  const raw = Uint8Array.from(atob(j.key), c=>c.charCodeAt(0));
+  return await crypto.subtle.importKey("raw", raw, "AES-GCM", true, ["decrypt"]);
 }
 
 async function getEnc(url){
@@ -646,6 +669,16 @@ async function tryCode(){
   if(key === "expired"){
     hint.style.color = "var(--dear)";
     hint.textContent = "תוקף הקוד פג. בקשו קוד חדש.";
+    return;
+  }
+  if(key === "other_device"){
+    hint.style.color = "var(--dear)";
+    hint.textContent = "הקוד הזה כבר בשימוש במכשיר אחר. כל קוד עובד במכשיר אחד בלבד.";
+    return;
+  }
+  if(key === "offline"){
+    hint.style.color = "var(--dear)";
+    hint.textContent = "אין חיבור לשרת. בדקו את האינטרנט ונסו שוב.";
     return;
   }
   if(!key){
