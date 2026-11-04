@@ -832,7 +832,7 @@ function termB(term, freshOnly){
     const have=BASKET.includes(it.b);
     const r=document.createElement("div"); r.className="sg"+(have?" have":"");
     r.innerHTML=`${thumb(it,58)}<span class="nm"></span>
-      <span class="pr">${it.f?'<span class="fresh">טרי</span>':''}<b>${nis(it.lo)}</b><span class="lbl">ב-${it.nc} רשתות</span></span>
+      <span class="pr">${it.f?'<span class="fresh">טרי</span>':''}<b>${nis(it.lo)}</b><span class="lbl">${it.nc>1?`ב-${it.nc} רשתות`:'רשת אחת'}</span></span>
       <button type="button" aria-label="הוסף">${have?"✓":"+"}</button>`;
     r.querySelector(".nm").textContent=it.n;
     r.querySelector("button").addEventListener("click",()=>{
